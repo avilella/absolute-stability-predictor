@@ -21,7 +21,7 @@ dependencies = [
     # ESM3 dependencies
     "attrs>=23.0.0",
     "einops",
-    "biotite",
+    "biotite>=0.36.1,<0.40.0",
     "msgpack-numpy",
     "scikit-learn",
     "brotli",
