@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 import numpy as np
@@ -174,8 +175,9 @@ def ESM3ABS(additional_layers_path, cfg=None):
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    access_token = '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'
-    login(token=access_token, add_to_git_credential=False)
+    hf_token = os.environ.get("HF_TOKEN")
+    if hf_token:
+        login(token=hf_token, add_to_git_credential=False)
 
 
     esm3 = ESM3.from_pretrained("esm3_sm_open_v1").to(device).to(torch.float32)
