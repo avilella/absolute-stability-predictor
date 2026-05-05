@@ -9,6 +9,21 @@ from esm.sdk.api import ESMProtein
 from huggingface_hub import login
 from model_utils import ESM3_Stability_head, SigmoidScaling
 
+# Patch ESM3's tokenize_sequence to handle None mask_token (transformers 4.40+ compat).
+# Newer PreTrainedTokenizerFast may return None for mask_token; str.replace() then crashes
+# even when the sequence contains no mask characters.
+import esm.utils.encoding as _esm_enc
+import esm.utils.constants.esm3 as _ESM_C
+_orig_tokenize_seq = _esm_enc.tokenize_sequence
+
+def _patched_tokenize_seq(sequence, sequence_tokenizer, add_special_tokens=True):
+    mask_tok = sequence_tokenizer.mask_token or "<mask>"
+    sequence = sequence.replace(_ESM_C.MASK_STR_SHORT, mask_tok)
+    tokens = sequence_tokenizer.encode(sequence, add_special_tokens=add_special_tokens)
+    return torch.tensor(tokens, dtype=torch.int64)
+
+_esm_enc.tokenize_sequence = _patched_tokenize_seq
+
 
 # -----------------------------------------------------------------------------
 # Constants & Helpers
@@ -324,13 +339,6 @@ def get_esm3_input_info_direct(pdb_path, chain_id, esm3_base_model):
     # 3. Encode using the base ESM3 model
     device = esm3_base_model.device
     esm3_base_model.eval()
-
-    # Patch: newer transformers (4.40+) may return None for mask_token on
-    # PreTrainedTokenizerFast — replace() crashes even when the sequence
-    # contains no mask characters. Force it to the correct string value.
-    seq_tok = esm3_base_model.tokenizers.sequence
-    if seq_tok.mask_token is None:
-        seq_tok._mask_token = "<mask>"
 
     with torch.no_grad():
         encoder = esm3_base_model.encode(protein_prompt)
