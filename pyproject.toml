@@ -18,7 +18,14 @@ dependencies = [
     "numpy>=1.24.0",
     "biopython>=1.81",
     "tqdm>=4.65.0",
+    # ESM3 dependencies
     "attrs>=23.0.0",
+    "einops",
+    "biotite",
+    "msgpack-numpy",
+    "scikit-learn",
+    "brotli",
+    "pandas",
 ]
 
 [project.urls]
