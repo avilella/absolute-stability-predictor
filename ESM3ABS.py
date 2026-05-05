@@ -322,13 +322,17 @@ def get_esm3_input_info_direct(pdb_path, chain_id, esm3_base_model):
     protein_prompt = ESMProtein(sequence=sequence, coordinates=structure_prompt)
     
     # 3. Encode using the base ESM3 model
-    # We need to make sure we are in eval mode and no grad for encoding
     device = esm3_base_model.device
     esm3_base_model.eval()
-    
+
+    # Patch: newer transformers (4.40+) may return None for mask_token on
+    # PreTrainedTokenizerFast — replace() crashes even when the sequence
+    # contains no mask characters. Force it to the correct string value.
+    seq_tok = esm3_base_model.tokenizers.sequence
+    if seq_tok.mask_token is None:
+        seq_tok._mask_token = "<mask>"
+
     with torch.no_grad():
-        # The encoder expects inputs on CPU or same device? 
-        # Usually encode() handles transfer, but let's be safe.
         encoder = esm3_base_model.encode(protein_prompt)
         
     info_dict = {}

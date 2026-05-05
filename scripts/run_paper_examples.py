@@ -112,8 +112,10 @@ def main():
             "esm3":   {"individual": esm_preds, "mean": esm_avg, "std": esm_std},
         }
 
-        print(f"  → SaProtΔG ensemble: {sap_avg:.3f} ± {sap_std:.3f} kcal/mol")
-        print(f"  → ESM3ΔG   ensemble: {esm_avg:.3f} ± {esm_std:.3f} kcal/mol")
+        if sap_avg is not None:
+            print(f"  → SaProtΔG ensemble: {sap_avg:.3f} ± {sap_std:.3f} kcal/mol")
+        if esm_avg is not None:
+            print(f"  → ESM3ΔG   ensemble: {esm_avg:.3f} ± {esm_std:.3f} kcal/mol")
 
     # ── Run mutational scans ──────────────────────────────────────────
     print("\n\n=== Mutational scans ===")
