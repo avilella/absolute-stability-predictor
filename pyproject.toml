@@ -26,6 +26,8 @@ dependencies = [
     "scikit-learn",
     "brotli",
     "pandas",
+    "cloudpathlib",
+    "networkx",
 ]
 
 [project.urls]
