@@ -33,7 +33,7 @@ import logging
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 
 ALPHABET = 'ACDEFGHIKLMNPQRSTVWY-'
-from config import get_default_config, get_model_configs
+from utils.config import get_default_config, get_model_configs
 from SaProtABS import SaProtABS, SaProtABS_predict
 
 import logging

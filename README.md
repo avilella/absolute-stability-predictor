@@ -156,16 +156,16 @@ Loads SaProt 650M with LoRA weights and a stability head.
 
 Pass `given_seq="AaGgLl..."` to skip Foldseek and provide a precomputed SA-token sequence directly.
 
-See [MISSING_RESIDUES_GUIDE.md](MISSING_RESIDUES_GUIDE.md) for strategies when the input structure has gaps.
+`handle_missing_residues` options: `"mask"` (default, <5% gaps), `"interpolate"` (5–15%), `"skip"` (>15%), `"keep"` (raw).
 
 ## Example Scripts
 
 | Script | Description |
 |---|---|
-| `run_paper_examples.py` | Run ESM3ΔG + SaProtΔG on all example structures |
-| `examples/SaProtABS_dms.py` | Deep mutational scanning pipeline |
-| `examples/SaProtABS_nanobody.py` | Nanobody stability scoring |
-| `examples/ESM3ABS_nanobody.py` | ESM3 nanobody stability scoring |
+| `scripts/run_paper_examples.py` | Run ESM3ΔG + SaProtΔG on all example structures |
+| `scripts/SaProtABS_dms.py` | Deep mutational scanning pipeline |
+| `scripts/SaProtABS_nanobody.py` | Nanobody stability scoring |
+| `scripts/ESM3ABS_nanobody.py` | ESM3 nanobody stability scoring |
 | `notebooks/SaProtABS.ipynb` | Interactive SaProt notebook |
 | `notebooks/ESM3ABS.ipynb` | Interactive ESM3 notebook |
 

@@ -10,12 +10,12 @@ Outputs paper_example_results.json with:
 import os, sys, json
 import torch
 
-_ROOT = os.path.dirname(os.path.abspath(__file__))
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(_ROOT)
 sys.path.insert(0, _ROOT)
 
-from config import get_default_config
-from config_esm3 import get_default_config as get_esm3_config
+from utils.config import get_default_config
+from utils.config_esm3 import get_default_config as get_esm3_config
 from SaProtABS import SaProtABS, SaProtABS_predict
 from ESM3ABS import ESM3ABS, ESM3ABS_predict
 

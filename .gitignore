@@ -9,7 +9,8 @@ bin/foldseek
 
 # Large data directories
 AF3_outputs/
-Adaptyv/cif/
+Adaptyv/
+1lci/
 denovo/
 sequence_clusters/
 structure_clusters/
@@ -22,6 +23,14 @@ nanobody/
 dmsv7_analysis/
 final_paper_check/
 csv/
+data/
+lib/
+paper/
+structures/
+
+# Loose PDB files at root
+*.pdb
+summary
 
 # Large / generated files
 myfile.zip

@@ -7,8 +7,9 @@ Usage:
 """
 import json, re, os
 
-RESULTS_PATH = "/home/jupyter-yehlin/ESM3_SaProt_dG/paper_example_results.json"
-HTML_PATH    = "/home/jupyter-yehlin/ESM3_SaProt_dG/index.html"
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RESULTS_PATH = os.path.join(_ROOT, "paper_example_results.json")
+HTML_PATH    = os.path.join(_ROOT, "index.html")
 
 with open(RESULTS_PATH) as f:
     results = json.load(f)
