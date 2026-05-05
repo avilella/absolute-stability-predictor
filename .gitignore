@@ -1,0 +1,60 @@
+# Model weights (download from Hugging Face)
+*.ckpt
+*.pt
+*.pth
+*.bin
+
+# Large binary / compiled
+bin/foldseek
+
+# Large data directories
+AF3_outputs/
+Adaptyv/cif/
+denovo/
+sequence_clusters/
+structure_clusters/
+zero_shots/
+rosetta_scores/
+archieve/
+download_structures/
+CD/
+nanobody/
+dmsv7_analysis/
+final_paper_check/
+csv/
+
+# Large / generated files
+myfile.zip
+Paper.pdf
+index.html
+paper_example_results.json
+
+# Symlinks to local environment
+esm
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.ipynb_checkpoints/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Environment
+.env
+.venv
+env/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

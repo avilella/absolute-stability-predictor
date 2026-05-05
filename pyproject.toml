@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "absolute-stability-predictor"
+version = "0.1.0"
+description = "Predict protein absolute stability (ΔG) with fine-tuned ESM3 and SaProt models"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+
+[project.urls]
+Homepage = "https://github.com/yehlincho/absolute-stability-predictor"
+Repository = "https://github.com/yehlincho/absolute-stability-predictor"
+dependencies = [
+    "torch>=2.0.0",
+    "transformers>=4.40.0",
+    "peft>=0.10.0",
+    "gemmi>=0.6.0",
+    "huggingface-hub>=0.22.0",
+    "numpy>=1.24.0",
+    "biopython>=1.81",
+    "tqdm>=4.65.0",
+]
+
+[project.scripts]
+run-paper-examples = "run_paper_examples:main"
+
+[tool.setuptools]
+py-modules = [
+    "ESM3ABS",
+    "SaProtABS",
+    "model_utils",
+    "config",
+    "config_esm3",
+    "run_paper_examples",
+    "update_demo_from_results",
+]
+
+[tool.setuptools.packages.find]
+include = ["utils*"]
