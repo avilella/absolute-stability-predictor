@@ -6,8 +6,8 @@ Fine-tuned ESM3 and SaProt models for predicting per-residue protein stability (
 
 | Model | Base | Parameters | Weights |
 |---|---|---|---|
-| **ESM3ΔG** | ESM3 (EvolutionaryScale) | LoRA r=4 + stability head | `esm3dg_weights/` |
-| **SaProtΔG** | SaProt 650M (Westlake) | LoRA r=4 + stability head | `saprotdg_weights/` |
+| **ESM3ΔG** | ESM3 (EvolutionaryScale) | LoRA r=4 + stability head | [Yehlin/absolute-stability](https://huggingface.co/Yehlin/absolute-stability) |
+| **SaProtΔG** | SaProt 650M (Westlake) | LoRA r=4 + stability head | [Yehlin/absolute-stability](https://huggingface.co/Yehlin/absolute-stability) |
 
 Both models are fine-tuned on a combined dataset of experimental ΔG and ΔΔG measurements (K50dG, DMSv4/v5/v7). Ensemble prediction over 3 checkpoints is recommended.
 
@@ -15,11 +15,40 @@ Augmented variants (`*_augmented_*.ckpt`) are trained with additional data augme
 
 ## Installation
 
+> **Important:** Install PyTorch with the correct CUDA version for your driver **before** installing this package. If you install the package first, pip may pull in a PyTorch build incompatible with your GPU driver.
+
+### Step 1 — Create a conda environment
+
 ```bash
-pip install absolute-stability-predictor
+conda create -n stability python=3.10 -y
+conda activate stability
 ```
 
-Or install from source:
+### Step 2 — Install PyTorch (match your CUDA driver)
+
+Check your driver's maximum supported CUDA version with `nvidia-smi`, then install the matching wheel:
+
+```bash
+# CUDA 12.4 (driver >= 550.x)
+pip install torch --index-url https://download.pytorch.org/whl/cu124
+
+# CUDA 12.1 (driver >= 530.x)
+pip install torch --index-url https://download.pytorch.org/whl/cu121
+```
+
+Verify CUDA is available before continuing:
+```bash
+python -c "import torch; print(torch.cuda.is_available(), torch.version.cuda)"
+# Should print: True 12.4  (or whichever version you installed)
+```
+
+### Step 3 — Install this package
+
+```bash
+pip install git+https://github.com/yehlincho/absolute-stability-predictor.git
+```
+
+Or from source:
 
 ```bash
 git clone https://github.com/yehlincho/absolute-stability-predictor.git
@@ -36,7 +65,23 @@ pip install git+https://github.com/evolutionaryScale/esm.git
 
 ## Download Weights
 
-Download model checkpoints from Hugging Face and place them in the correct directories:
+Weights are hosted on Hugging Face: **[Yehlin/absolute-stability](https://huggingface.co/Yehlin/absolute-stability)**
+
+### Option A — Python (recommended)
+
+```python
+from huggingface_hub import snapshot_download
+
+snapshot_download(
+    repo_id="Yehlin/absolute-stability",
+    local_dir=".",          # downloads into esm3dg_weights/ and saprotdg_weights/
+    token="hf_...",         # required if repo is private
+)
+```
+
+### Option B — Manual
+
+Download individual files from [huggingface.co/Yehlin/absolute-stability](https://huggingface.co/Yehlin/absolute-stability) and place them as follows:
 
 ```
 esm3dg_weights/
@@ -55,8 +100,6 @@ saprotdg_weights/
   SaProtdG_weights_augmented_2_lora.ckpt
   SaProtdG_weights_augmented_3_lora.ckpt
 ```
-
-> Hugging Face link: *(add link here)*
 
 ## Quick Start
 
