@@ -87,11 +87,14 @@ class ModelWrapper(nn.Module):
         self.stability_head = stability_head.to(device)
 
     def forward(self, sequence_tokens, structure_tokens, structure_coords):
-        # ESM3 Forward pass
+        # sequence_id=1 for real positions, 0 for pad (token=1), so padding is
+        # excluded from attending to/being attended by real positions.
+        sequence_id = (sequence_tokens != 1).long()
         base_outputs = self.base_model(
-            sequence_tokens=sequence_tokens, 
-            structure_tokens=structure_tokens, 
-            structure_coords=structure_coords
+            sequence_tokens=sequence_tokens,
+            structure_tokens=structure_tokens,
+            structure_coords=structure_coords,
+            sequence_id=sequence_id,
         )
         
         features = base_outputs.embeddings  
@@ -225,6 +228,8 @@ def ESM3ABS(additional_layers_path, cfg=None):
             
     if lora_keys:
         msg = esm3.load_state_dict(lora_keys, strict=False)
+        if msg.unexpected_keys:
+            print(f"[ESM3ABS] unexpected LoRA keys: {msg.unexpected_keys[:3]}")
 
     
 
@@ -253,7 +258,14 @@ def ESM3ABS(additional_layers_path, cfg=None):
     if scale_keys:
         msg = output_scaling.load_state_dict(scale_keys, strict=True)
 
-
+    # Load fine-tuned base ESM3 weights (diverged from pretrained during unfreeze warm-up)
+    base_esm3_keys = {}
+    for k, v in state_dict.items():
+        if k.startswith('model.esm3.') and 'lora_A' not in k and 'lora_B' not in k:
+            clean_k = k[len('model.esm3.'):]
+            base_esm3_keys[clean_k] = v
+    if base_esm3_keys:
+        msg = esm3.load_state_dict(base_esm3_keys, strict=False)
 
     esm3_stability_model = ModelWrapper(esm3, stability_head, device)
     
@@ -319,21 +331,28 @@ def parse_CIF(path_to_cif, input_chain_list=None, ca_only=False, side_chains=Tru
 
 
 
-def get_esm3_input_info_direct(pdb_path, chain_id, esm3_base_model):
+def get_esm3_input_info_direct(pdb_path, chain_id, esm3_base_model, aa_seq=None):
     """
     Prepares the input dictionary for ESM3dG using the model's internal encoder.
+    If aa_seq is provided it is used as the sequence (matching DMSV4Dataset_AF behaviour);
+    otherwise the sequence is parsed from the PDB/CIF file.
     """
     # 1. Get raw data from file
     sequence, coords = parse_CIF(pdb_path, chain_id)
 
-    
-    if sequence is None or coords is None:
+    if coords is None:
+        return None, None
+
+    # Use CSV sequence when available (matches original training/test pipeline)
+    if aa_seq is not None:
+        sequence = aa_seq
+    elif sequence is None:
         return None, None
 
     # 2. Prepare ESMProtein object
     # Ensure coords are tensor
-    structure_prompt = torch.tensor(coords, dtype=torch.float32)
-    
+    structure_prompt = torch.tensor(coords)
+
     protein_prompt = ESMProtein(sequence=sequence, coordinates=structure_prompt)
     
     # 3. Encode using the base ESM3 model
@@ -350,7 +369,7 @@ def get_esm3_input_info_direct(pdb_path, chain_id, esm3_base_model):
     
     return info_dict, sequence
 
-def ESM3ABS_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_on = False):
+def ESM3ABS_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_on=False, aa_seq=None):
     """
     Predicts stability (dG) or performs scanning for a given PDB file.
 
@@ -359,17 +378,18 @@ def ESM3ABS_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_o
         pdb_path: Path to the PDB/CIF file
         chain_id: Chain ID to parse
         ddg_scanning: Whether to perform mutational scanning
-        
+        aa_seq: Optional amino acid sequence override (e.g. mutant sequence on WT structure)
+
     Returns:
         (pred, pred_avg, sequence)
         OR
         (ddg_scan, scaled_ddg_scan, sequence) if scanning
     """
-    
+
     base_esm3 = model.esm3_stability_model.base_model
 
     # 1. Get Input Info
-    info_dict, sequence = get_esm3_input_info_direct(pdb_path, chain_id, base_esm3)
+    info_dict, sequence = get_esm3_input_info_direct(pdb_path, chain_id, base_esm3, aa_seq=aa_seq)
 
     if info_dict is None or sequence is None:
         print("Error getting input info")
