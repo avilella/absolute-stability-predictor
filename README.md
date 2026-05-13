@@ -177,8 +177,6 @@ ddg_scan, scaled_ddg_scan, sequence = ESM3ABS_predict(
 
 | Script | Description |
 |---|---|
-| `scripts/run_paper_examples.py` | Run ESM3ΔG + SaProtΔG on all example structures |
-| `scripts/SaProtABS_dms.py` | Deep mutational scanning pipeline |
 | `scripts/SaProtABS_nanobody.py` | Nanobody stability scoring |
 | `scripts/ESM3ABS_nanobody.py` | ESM3 nanobody stability scoring |
 | `notebooks/SaProtABS.ipynb` | Interactive SaProt notebook |
