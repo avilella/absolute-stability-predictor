@@ -16,8 +16,8 @@ sys.path.insert(0, _ROOT)
 
 from utils.config import get_default_config
 from utils.config_esm3 import get_default_config as get_esm3_config
-from SaProtABS import SaProtABS, SaProtABS_predict
-from ESM3ABS import ESM3ABS, ESM3ABS_predict
+from SaProtdG import SaProtdG, SaProtdG_predict
+from ESM3dG import ESM3dG, ESM3dG_predict
 
 EXAMPLES_DIR = os.path.join(_ROOT, "examples")
 
@@ -56,7 +56,7 @@ def load_sap_ensemble(indices, label, cfg, device):
         tag = "" if label == "base" else "_augmented"
         w = f"saprotdg_weights/SaProtdG_weights{tag}_{i}_lora.ckpt"
         print(f"  Loading {w}")
-        m = SaProtABS(w, cfg)
+        m = SaProtdG(w, cfg)
         m.to(device); m.device = torch.device(device)
         models.append(m)
     return models
@@ -69,7 +69,7 @@ def load_esm_ensemble(indices, label, cfg, device):
         tag = "" if label == "base" else "_augmented"
         w = f"esm3dg_weights/ESM3dG_weights{tag}_{i}_lora.ckpt"
         print(f"  Loading {w}")
-        m = ESM3ABS(w, cfg)
+        m = ESM3dG(w, cfg)
         m.to(device); m.device = torch.device(device)
         models.append(m)
     return models
@@ -79,7 +79,7 @@ def run_dg_preds(sap_models, esm_models, pdb_path, chain, label):
     sap_preds, esm_preds = [], []
     for i, model in enumerate(sap_models, 1):
         try:
-            _, avg, _ = SaProtABS_predict(model, pdb_path, chain)
+            _, avg, _ = SaProtdG_predict(model, pdb_path, chain)
             val = round(avg[0], 3)
             sap_preds.append(val)
             print(f"  SaProtΔG-{label} model {i}: {val:.3f} kcal/mol")
@@ -87,7 +87,7 @@ def run_dg_preds(sap_models, esm_models, pdb_path, chain, label):
             print(f"  SaProtΔG-{label} model {i} FAILED: {e}")
     for i, model in enumerate(esm_models, 1):
         try:
-            _, avg, _ = ESM3ABS_predict(model, pdb_path, chain)
+            _, avg, _ = ESM3dG_predict(model, pdb_path, chain)
             val = round(avg[0], 3)
             esm_preds.append(val)
             print(f"  ESM3ΔG-{label}   model {i}: {val:.3f} kcal/mol")
@@ -100,7 +100,7 @@ def run_scans(sap_models, esm_models, pdb_path, chain, label):
     sap_scans, esm_scans = [], []
     for i, model in enumerate(sap_models, 1):
         try:
-            result = SaProtABS_predict(model, pdb_path, chain, ddg_scanning=True)
+            result = SaProtdG_predict(model, pdb_path, chain, ddg_scanning=True)
             mat = result[0].mean(dim=-1).squeeze(2)
             sap_scans.append(mat)
             print(f"  SaProtΔG-{label} scan model {i}: shape {list(mat.shape)}")
@@ -108,7 +108,7 @@ def run_scans(sap_models, esm_models, pdb_path, chain, label):
             print(f"  SaProtΔG-{label} scan model {i} FAILED: {e}")
     for i, model in enumerate(esm_models, 1):
         try:
-            result = ESM3ABS_predict(model, pdb_path, chain, ddg_scanning=True)
+            result = ESM3dG_predict(model, pdb_path, chain, ddg_scanning=True)
             mat = result[0].mean(dim=-1).squeeze(2)
             esm_scans.append(mat)
             print(f"  ESM3ΔG-{label}   scan model {i}: shape {list(mat.shape)}")

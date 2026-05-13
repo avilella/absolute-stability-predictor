@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from ESM3ABS import ESM3ABS, ESM3ABS_predict
+from ESM3dG import ESM3dG, ESM3dG_predict
 
 import logging
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
@@ -32,8 +32,8 @@ pdb_path = PDB_NAME if os.path.isfile(PDB_NAME) else f"{PDB_NAME}.pdb"
 all_mean_results = []
 for i, weight_file in enumerate(WEIGHT_FILES, 1):
     weight_path = f"{WEIGHTS_DIR}/{weight_file}"
-    model = ESM3ABS(weight_path)
-    ddg_scan, scaled_ddg_scan, sequence = ESM3ABS_predict(model, pdb_path, CHAIN_ID, ddg_scanning=True)
+    model = ESM3dG(weight_path)
+    ddg_scan, scaled_ddg_scan, sequence = ESM3dG_predict(model, pdb_path, CHAIN_ID, ddg_scanning=True)
     mean_results = np.mean(scaled_ddg_scan.detach().cpu().numpy(), axis=-1).T[0]
     all_mean_results.append(mean_results)
 

@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt
 
 ALPHABET = 'ACDEFGHIKLMNPQRSTVWY-'
 from utils.config import get_default_config, get_model_configs
-from SaProtABS import SaProtABS, SaProtABS_predict
+from SaProtdG import SaProtdG, SaProtdG_predict
 
 import logging
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
@@ -86,8 +86,8 @@ combined_seq_1lci = frag1 + frag2 + frag3 + frag4 + frag5 + frag6
 all_mean_results = []
 for i, weight_file in enumerate(WEIGHT_FILES, 1):
     weight_path = f"{WEIGHTS_DIR}/{weight_file}"
-    model = SaProtABS(weight_path, cfg)
-    pred_mutant_ddg, scaled_pred_mutant_ddg, combined_seq = SaProtABS_predict(model, pdb_path, CHAIN_ID, ddg_scanning, given_seq=combined_seq_1lci)
+    model = SaProtdG(weight_path, cfg)
+    pred_mutant_ddg, scaled_pred_mutant_ddg, combined_seq = SaProtdG_predict(model, pdb_path, CHAIN_ID, ddg_scanning, given_seq=combined_seq_1lci)
     mean_results = np.mean(scaled_pred_mutant_ddg.detach().cpu().numpy(), axis=-1).T[0]
     all_mean_results.append(mean_results)
     
