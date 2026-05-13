@@ -193,8 +193,23 @@ Input structures can be predicted with:
   ```
   The `-o output.pdb` flag saves the structure to `output.pdb`. Without it, the PDB content is printed to the terminal only.
 - **ColabFold / LocalColabFold**: [YoshitakaMo/localcolabfold](https://github.com/YoshitakaMo/localcolabfold)
+
+  Install:
   ```bash
-  colabfold_batch input outputdir/
+  wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/install_colabfold_linux.sh
+  bash install_colabfold_linux.sh
+  export PATH="/path/to/localcolabfold/colabfold-conda/bin:$PATH"
+  ```
+
+  Run:
+  ```bash
+  colabfold_batch myprotein.fasta data/
+  ```
+
+  `myprotein.fasta`:
+  ```
+  >my_protein
+  MKTAYIAKQRQISFVK...
   ```
 
 ## Citation
