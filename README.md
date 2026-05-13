@@ -201,6 +201,13 @@ Input structures can be predicted with:
   pip install "colabfold[alphafold]"
   ```
 
+  Enable GPU (required for reasonable speed):
+  ```bash
+  conda activate colabfold
+  pip install "jax[cuda12]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+  ```
+  > Check your CUDA version first with `nvidia-smi` and replace `cuda12` with `cuda11` if needed.
+
   Run:
   ```bash
   conda activate colabfold
