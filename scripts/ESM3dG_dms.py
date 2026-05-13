@@ -21,7 +21,7 @@ logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 
 ALPHABET = 'ACDEFGHIKLMNPQRSTVWY-'
 
-PDB_NAME = '1lci'
+PDB_NAME = 'nanobody_1zvh'
 CHAIN_ID = 'A'
 WEIGHTS_DIR = os.path.join(_ROOT, "esm3dg_weights")
 WEIGHT_FILES = [
@@ -30,7 +30,7 @@ WEIGHT_FILES = [
     "ESM3dG_weights_3_lora.ckpt",
 ]
 
-pdb_path = PDB_NAME if os.path.isfile(PDB_NAME) else f"{PDB_NAME}.pdb"
+pdb_path = os.path.join(_ROOT, "examples", "nanobody_1zvh.cif")
 
 all_mean_results = []
 for i, weight_file in enumerate(WEIGHT_FILES, 1):

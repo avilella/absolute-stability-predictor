@@ -63,7 +63,7 @@ cfg = get_default_config()
 ddg_scanning = True 
 cfg.testing.ddg_scanning = ddg_scanning
 
-PDB_NAME = '1lci'
+PDB_NAME = 'nanobody_1zvh'
 CHAIN_ID = 'A'
 WEIGHTS_DIR = os.path.join(_ROOT, "saprotdg_weights")
 WEIGHT_FILES = [
@@ -71,7 +71,7 @@ WEIGHT_FILES = [
     "SaProtdG_weights_2_lora.ckpt",
     "SaProtdG_weights_3_lora.ckpt"
 ]  
-pdb_path = get_pdb(PDB_NAME)
+pdb_path = os.path.join(_ROOT, "examples", "nanobody_1zvh.cif")
 frag1='M#E#D#'
 frag2='AdKpNqIkKfKaGaPdAaPfFpYdPhLqEdDdGfTfAlGlEqQlLlHlKvAlMlKvRvYqAlLvVpPpGpTlIfAlFeTaDaAlHvIvEgVdNtIdTgYsAvEnYlFlElMlSlVlRlLlAlEqAlMvKvRqYvGpLdNaTlNvHfReIeVeVeCaSeEfNdSdLpQqFrFcMsPnVlLsGsAcLsFlIrGlVhAeVyAePyAqNyDnIvYqNaElRvEcLvLlNlSsMcNvIlSrQlPhTqVeVyFeVySaKvKvGcLvQvKsIvLvNvVsQcKvKvLrPvIsIhQpKaIyIeIhMrDpSdKcTqDaYdQpGnFhQhShMsYnTvFsVsTvSvHgLdPdPpGpFdNdEsYvDvFrVhPgEdStFdDpRqDaKpTgIfAsLyIqMaNkSp'
 frag3='S#G#S#T#G#'
