@@ -192,25 +192,10 @@ Input structures can be predicted with:
   curl -X POST --data "SEQUENCE" https://api.esmatlas.com/foldSequence/v1/pdb/ -o data/output.pdb
   ```
   The `-o output.pdb` flag saves the structure to `output.pdb`. Without it, the PDB content is printed to the terminal only.
-- **ColabFold / LocalColabFold**: [YoshitakaMo/localcolabfold](https://github.com/YoshitakaMo/localcolabfold)
-
-  Install in a separate conda environment (recommended — avoids JAX/PyTorch conflicts):
-  ```bash
-  conda create -n colabfold python=3.10 -y
-  conda activate colabfold
-  pip install "colabfold[alphafold]"
-  ```
-
-  Enable GPU (required for reasonable speed):
-  ```bash
-  conda activate colabfold
-  pip install "jax[cuda12]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-  ```
-  > Check your CUDA version first with `nvidia-smi` and replace `cuda12` with `cuda11` if needed.
+- **ColabFold / LocalColabFold**: follow the installation instructions at [YoshitakaMo/localcolabfold](https://github.com/YoshitakaMo/localcolabfold).
 
   Run:
   ```bash
-  conda activate colabfold
   colabfold_batch myprotein.fasta data/
   ```
 
