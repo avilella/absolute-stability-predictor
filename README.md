@@ -121,6 +121,9 @@ WEIGHTS = [
     "esm3dg_weights/ESM3dG_weights_1_lora.ckpt",
     "esm3dg_weights/ESM3dG_weights_2_lora.ckpt",
     "esm3dg_weights/ESM3dG_weights_3_lora.ckpt",
+    "esm3dg_weights/ESM3dG_weights_augmented_1_lora.ckpt",
+    "esm3dg_weights/ESM3dG_weights_augmented_2_lora.ckpt",
+    "esm3dg_weights/ESM3dG_weights_augmented_3_lora.ckpt",
 ]
 
 models = [ESM3ABS(w) for w in WEIGHTS]
@@ -138,6 +141,9 @@ WEIGHTS = [
     "saprotdg_weights/SaProtdG_weights_1_lora.ckpt",
     "saprotdg_weights/SaProtdG_weights_2_lora.ckpt",
     "saprotdg_weights/SaProtdG_weights_3_lora.ckpt",
+    "saprotdg_weights/SaProtdG_weights_augmented_1_lora.ckpt",
+    "saprotdg_weights/SaProtdG_weights_augmented_2_lora.ckpt",
+    "saprotdg_weights/SaProtdG_weights_augmented_3_lora.ckpt",
 ]
 
 models = [SaProtABS(w) for w in WEIGHTS]
