@@ -25,9 +25,9 @@ PDB_NAME = 'nanobody_1zvh'
 CHAIN_ID = 'A'
 WEIGHTS_DIR = os.path.join(_ROOT, "esm3dg_weights")
 WEIGHT_FILES = [
-    "ESM3dG_weights_1_lora.ckpt",
-    "ESM3dG_weights_2_lora.ckpt",
-    "ESM3dG_weights_3_lora.ckpt",
+    "ESM3dG_weights_augmented_1_lora.ckpt",
+    "ESM3dG_weights_augmented_2_lora.ckpt",
+    "ESM3dG_weights_augmented_3_lora.ckpt",
 ]
 
 pdb_path = os.path.join(_ROOT, "examples", "nanobody_1zvh.cif")
