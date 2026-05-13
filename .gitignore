@@ -68,3 +68,6 @@ Thumbs.db
 .vscode/
 .idea/
 scripts/SaProtdG_dms.py
+notebooks/1lci_analysis.ipynb
+notebooks/3L1X_Mutational_Scanning.ipynb
+notebooks/benorr_results_analysis.ipynb
