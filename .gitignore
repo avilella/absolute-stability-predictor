@@ -19,7 +19,8 @@ rosetta_scores/
 archieve/
 download_structures/
 CD/
-nanobody/
+scripts/ESM3ABS_nanobody.py
+scripts/SaProtABS_nanobody.py
 dmsv7_analysis/
 final_paper_check/
 csv/
