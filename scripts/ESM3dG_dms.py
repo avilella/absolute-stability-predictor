@@ -23,6 +23,7 @@ ALPHABET = 'ACDEFGHIKLMNPQRSTVWY-'
 
 PDB_NAME = 'nanobody_1zvh'
 CHAIN_ID = 'A'
+SCAN_BATCH_SIZE = 1   # increase (e.g. 16) to run multiple mutations per forward pass
 WEIGHTS_DIR = os.path.join(_ROOT, "esm3dg_weights")
 WEIGHT_FILES = [
     "ESM3dG_weights_augmented_1_lora.ckpt",
@@ -36,7 +37,7 @@ all_mean_results = []
 for i, weight_file in enumerate(WEIGHT_FILES, 1):
     weight_path = f"{WEIGHTS_DIR}/{weight_file}"
     model = ESM3dG(weight_path)
-    ddg_scan, scaled_ddg_scan, sequence = ESM3dG_predict(model, pdb_path, CHAIN_ID, ddg_scanning=True)
+    ddg_scan, scaled_ddg_scan, sequence = ESM3dG_predict(model, pdb_path, CHAIN_ID, ddg_scanning=True, scan_batch_size=SCAN_BATCH_SIZE)
     mean_results = np.mean(scaled_ddg_scan.detach().cpu().numpy(), axis=-1).T[0]
     all_mean_results.append(mean_results)
 

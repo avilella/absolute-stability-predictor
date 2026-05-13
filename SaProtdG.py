@@ -64,6 +64,7 @@ def SaProtdG(additional_layers_path, cfg=None):
             self.ddg_scanning = ddg_scanning
             self.device = device
             self.ALPHABET = "ACDEFGHIKLMNPQRSTVWY"
+            self.scan_batch_size = 1
 
         def forward(self, S):
             # Tokenize input
@@ -90,25 +91,28 @@ def SaProtdG(additional_layers_path, cfg=None):
                 dg_wt = stability_output.squeeze(-1)
                 scaled_dg_wt = self.output_scaling(dg_wt)
                 
-                # Scan through all positions and amino acids
-                for i in range(length):
-                    for j, A in enumerate(list(self.ALPHABET)):
+                all_muts = [(i, j, A) for i in range(length) for j, A in enumerate(list(self.ALPHABET))]
+
+                for start in range(0, len(all_muts), self.scan_batch_size):
+                    chunk = all_muts[start:start + self.scan_batch_size]
+                    mut_seqs = []
+                    for (i, j, A) in chunk:
                         MUT = list(S[0])
                         MUT[i*2] = A
-                        MUT = "".join(MUT)
-                        # Get mutant stability
-                        mut_inputs = self.tokenizer([MUT], return_tensors="pt", padding=True, truncation=True)
-                        mut_inputs = {k: v.to(self.device) for k, v in mut_inputs.items()}
-                        mut_outputs = self.base_model(**mut_inputs, output_hidden_states=True)
-                        mut_hidden = mut_outputs.hidden_states[-1]
-                        mut_stability = self.stability_head(mut_hidden)
-                        dg_mut = mut_stability.squeeze(-1)
-                        scaled_dg_mut = self.output_scaling(dg_mut)
-                        
-                        # Calculate ddG
-                        ddg_scan[i][j] = (dg_mut-dg_wt)[:, 1:-1]
-                        scaled_ddg_scan[i][j] = (scaled_dg_mut-scaled_dg_wt)[:, 1:-1]
-                        
+                        mut_seqs.append("".join(MUT))
+
+                    mut_inputs = self.tokenizer(mut_seqs, return_tensors="pt", padding=True, truncation=True)
+                    mut_inputs = {k: v.to(self.device) for k, v in mut_inputs.items()}
+                    mut_outputs = self.base_model(**mut_inputs, output_hidden_states=True)
+                    mut_hidden = mut_outputs.hidden_states[-1]
+                    mut_stability = self.stability_head(mut_hidden)
+                    dg_mut = mut_stability.squeeze(-1)
+                    scaled_dg_mut = self.output_scaling(dg_mut)
+
+                    for k, (i, j, _) in enumerate(chunk):
+                        ddg_scan[i][j] = (dg_mut[k:k+1] - dg_wt)[:, 1:-1]
+                        scaled_ddg_scan[i][j] = (scaled_dg_mut[k:k+1] - scaled_dg_wt)[:, 1:-1]
+
                 return ddg_scan, scaled_ddg_scan
             else:
                 # Pass through stability head
@@ -175,7 +179,7 @@ def SaProtdG(additional_layers_path, cfg=None):
 
     return final_model
 
-def SaProtdG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, cdna_rescale=False, foldseek_path="bin/foldseek", given_seq=None):
+def SaProtdG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, cdna_rescale=False, foldseek_path="bin/foldseek", given_seq=None, scan_batch_size=1):
     from utils.foldseek_util import get_struc_seq
     import os
     
@@ -204,6 +208,7 @@ def SaProtdG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, cdna_res
             print("mutational scanning")
             original_flag = model.ddg_scanning
             model.ddg_scanning = True
+            model.scan_batch_size = scan_batch_size
             try:
                 ddg_scan, scaled_ddg_scan = model([combined_seq])
             finally:

@@ -23,6 +23,7 @@ ALPHABET = 'ACDEFGHIKLMNPQRSTVWY-'
 
 PDB_NAME = 'nanobody_1zvh'
 CHAIN_ID = 'A'
+SCAN_BATCH_SIZE = 1   # increase (e.g. 16) to run multiple mutations per forward pass
 WEIGHTS_DIR = os.path.join(_ROOT, "saprotdg_weights")
 WEIGHT_FILES = [
     "SaProtdG_weights_augmented_1_lora.ckpt",
@@ -36,7 +37,7 @@ all_mean_results = []
 for i, weight_file in enumerate(WEIGHT_FILES, 1):
     weight_path = f"{WEIGHTS_DIR}/{weight_file}"
     model = SaProtdG(weight_path)
-    pred_mutant_ddg, scaled_pred_mutant_ddg, combined_seq = SaProtdG_predict(model, pdb_path, CHAIN_ID, ddg_scanning=True)
+    pred_mutant_ddg, scaled_pred_mutant_ddg, combined_seq = SaProtdG_predict(model, pdb_path, CHAIN_ID, ddg_scanning=True, scan_batch_size=SCAN_BATCH_SIZE)
     mean_results = np.mean(scaled_pred_mutant_ddg.detach().cpu().numpy(), axis=-1).T[0]
     all_mean_results.append(mean_results)
 

@@ -109,6 +109,7 @@ class TransferModel(nn.Module):
         self.output_scaling = output_scaling
         self.ddg_scanning = ddg_scanning
         self.device = device
+        self.scan_batch_size = 1
         
     def forward(self, batch):
         if not self.ddg_scanning:
@@ -149,33 +150,32 @@ class TransferModel(nn.Module):
             dg_wt = stability_output.squeeze(-1)
             dg_scaled_wt = self.output_scaling(dg_wt)
             
-            # Mutational Scan Loop
-            # Optimization: In a real scenario, this loop is slow. 
-            # We clone the batch dict to avoid modifying the original constantly in a way that breaks things.
             base_seq = seq_tokens_original.clone().detach()
-            
-            for i in range(length-2): ## exclude start and end token 
-                for j, A in enumerate(list(ALPHABET)):
+            all_muts = [(i, j, A) for i in range(length-2) for j, A in enumerate(list(ALPHABET))]
+
+            for start in range(0, len(all_muts), self.scan_batch_size):
+                chunk = all_muts[start:start + self.scan_batch_size]
+                mut_batch = []
+                for (i, j, A) in chunk:
                     MUT = base_seq.clone()
-                    MUT[i+1] = matched_indices[A] ## first position is start token
-                    
-                    # Temporarily update batch
-                    batch[0]['seq'] = MUT
-                    
-                    sequence_tokens, structure_tokens, coordinates_tokens, mask = tied_featurize(batch, self.device)
-                    stability_output = self.esm3_stability_model(
-                        sequence_tokens=sequence_tokens, 
-                        structure_tokens=structure_tokens, 
-                        structure_coords=coordinates_tokens
-                    )
-                    
-                    dg_mut = stability_output.squeeze(-1)
-                    dg_scaled_mut = self.output_scaling(dg_mut)
-                    
-                    dg_scan[i][j] = (dg_mut - dg_wt)[:, 1:-1]
-                    dg_scaled[i][j] = (dg_scaled_mut - dg_scaled_wt)[:, 1:-1]
-            
-            # Restore original seq
+                    MUT[i+1] = matched_indices[A]
+                    item = {k: v.clone() if isinstance(v, torch.Tensor) else v for k, v in batch[0].items()}
+                    item['seq'] = MUT
+                    mut_batch.append(item)
+
+                sequence_tokens, structure_tokens, coordinates_tokens, mask = tied_featurize(mut_batch, self.device)
+                stability_output = self.esm3_stability_model(
+                    sequence_tokens=sequence_tokens,
+                    structure_tokens=structure_tokens,
+                    structure_coords=coordinates_tokens
+                )
+                dg_mut = stability_output.squeeze(-1)
+                dg_scaled_mut = self.output_scaling(dg_mut)
+
+                for k, (i, j, _) in enumerate(chunk):
+                    dg_scan[i][j] = (dg_mut[k:k+1] - dg_wt)[:, 1:-1]
+                    dg_scaled[i][j] = (dg_scaled_mut[k:k+1] - dg_scaled_wt)[:, 1:-1]
+
             batch[0]['seq'] = base_seq
             return dg_scan, dg_scaled
 
@@ -350,7 +350,7 @@ def get_esm3_input_info_direct(pdb_path, chain_id, esm3_base_model):
     
     return info_dict, sequence
 
-def ESM3dG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_on = False):
+def ESM3dG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_on=False, scan_batch_size=1):
     """
     Predicts stability (dG) or performs scanning for a given PDB file.
 
@@ -377,7 +377,8 @@ def ESM3dG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_on
 
     # 2. Run Prediction
     model.eval()
-    model.ddg_scanning = ddg_scanning # Dynamically set mode
+    model.ddg_scanning = ddg_scanning
+    model.scan_batch_size = scan_batch_size
     
     with torch.no_grad():
         # Pass as a list (batch of 1)
