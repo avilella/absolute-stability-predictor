@@ -24,7 +24,7 @@ Augmented variants (`*_augmented_*.ckpt`) are trained with additional data augme
 ### Step 1 — Create a conda environment
 
 ```bash
-conda create -n stability python=3.10 -y
+conda create -n stability python=3.12 -y
 conda activate stability
 ```
 
@@ -64,6 +64,13 @@ pip install -e .
 ```bash
 pip install git+https://github.com/evolutionaryScale/esm.git
 ```
+
+> **ESM3 is a gated model.** Before loading it you must:
+> 1. Accept the license at [huggingface.co/EvolutionaryScale/esm3-sm-open-v1](https://huggingface.co/EvolutionaryScale/esm3-sm-open-v1)
+> 2. Log in with your HuggingFace token:
+> ```bash
+> huggingface-cli login
+> ```
 
 **Foldseek** (required for SaProtΔG only) — download the binary for your platform from [steineggerlab/foldseek](https://github.com/steineggerlab/foldseek/releases) and place it at `bin/foldseek`.
 
