@@ -4,7 +4,7 @@ from transformers import AutoTokenizer, AutoModelForMaskedLM
 from peft import get_peft_model, LoraConfig, TaskType
 from model_utils import Stability_classification_head, SigmoidScaling
 
-def SaProtABS(additional_layers_path, cfg=None):
+def SaProtdG(additional_layers_path, cfg=None):
     """
     Create a TransferModel using base SaProt from transformers and merge with additional layers
     (stability head + output scaling + LoRA weights)
@@ -175,7 +175,7 @@ def SaProtABS(additional_layers_path, cfg=None):
 
     return final_model
 
-def SaProtABS_predict(model, pdb_path, chain_id='A', ddg_scanning=False, cdna_rescale=False, foldseek_path="bin/foldseek", given_seq=None):
+def SaProtdG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, cdna_rescale=False, foldseek_path="bin/foldseek", given_seq=None):
     from utils.foldseek_util import get_struc_seq
     import os
     

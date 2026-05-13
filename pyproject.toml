@@ -38,7 +38,7 @@ Repository = "https://github.com/yehlincho/absolute-stability-predictor"
 run-paper-examples = "scripts.run_paper_examples:main"
 
 [tool.setuptools]
-py-modules = ["ESM3ABS", "SaProtABS", "model_utils"]
+py-modules = ["ESM3dG", "SaProtdG", "model_utils"]
 
 [tool.setuptools.packages.find]
 include = ["utils*", "scripts*"]

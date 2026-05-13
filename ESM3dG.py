@@ -179,7 +179,7 @@ class TransferModel(nn.Module):
             batch[0]['seq'] = base_seq
             return dg_scan, dg_scaled
 
-def ESM3ABS(additional_layers_path, cfg=None):
+def ESM3dG(additional_layers_path, cfg=None):
     if cfg is None:
         class SimpleConfig:
             def __init__(self):
@@ -350,7 +350,7 @@ def get_esm3_input_info_direct(pdb_path, chain_id, esm3_base_model):
     
     return info_dict, sequence
 
-def ESM3ABS_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_on = False):
+def ESM3dG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_on = False):
     """
     Predicts stability (dG) or performs scanning for a given PDB file.
 

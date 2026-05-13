@@ -115,7 +115,7 @@ saprotdg_weights/
 ### ESM3ΔG
 
 ```python
-from ESM3ABS import ESM3ABS, ESM3ABS_predict
+from ESM3dG import ESM3dG, ESM3dG_predict
 
 # Augmented ensemble (recommended)
 WEIGHTS = [
@@ -131,8 +131,8 @@ WEIGHTS = [
 #     "esm3dg_weights/ESM3dG_weights_3_lora.ckpt",
 # ]
 
-models = [ESM3ABS(w) for w in WEIGHTS]
-preds = [ESM3ABS_predict(m, "examples/nanobody_1zvh.cif", "A")[1][0] for m in models]
+models = [ESM3dG(w) for w in WEIGHTS]
+preds = [ESM3dG_predict(m, "examples/nanobody_1zvh.cif", "A")[1][0] for m in models]
 ensemble_avg = sum(preds) / len(preds)
 print(f"Ensemble ΔG: {ensemble_avg:.2f} kcal/mol")
 ```
@@ -140,7 +140,7 @@ print(f"Ensemble ΔG: {ensemble_avg:.2f} kcal/mol")
 ### SaProtΔG
 
 ```python
-from SaProtABS import SaProtABS, SaProtABS_predict
+from SaProtdG import SaProtdG, SaProtdG_predict
 
 # Augmented ensemble (recommended)
 WEIGHTS = [
@@ -156,8 +156,8 @@ WEIGHTS = [
 #     "saprotdg_weights/SaProtdG_weights_3_lora.ckpt",
 # ]
 
-models = [SaProtABS(w) for w in WEIGHTS]
-preds = [SaProtABS_predict(m, "examples/nanobody_1zvh.cif", "A")[1][0] for m in models]
+models = [SaProtdG(w) for w in WEIGHTS]
+preds = [SaProtdG_predict(m, "examples/nanobody_1zvh.cif", "A")[1][0] for m in models]
 ensemble_avg = sum(preds) / len(preds)
 print(f"Ensemble ΔG: {ensemble_avg:.2f} kcal/mol")
 ```
@@ -165,7 +165,7 @@ print(f"Ensemble ΔG: {ensemble_avg:.2f} kcal/mol")
 ## Mutational Scanning (ΔΔG)
 
 ```python
-ddg_scan, scaled_ddg_scan, sequence = ESM3ABS_predict(
+ddg_scan, scaled_ddg_scan, sequence = ESM3dG_predict(
     model,
     pdb_path="examples/nanobody_1zvh.cif",
     chain_id="A",
@@ -178,10 +178,10 @@ ddg_scan, scaled_ddg_scan, sequence = ESM3ABS_predict(
 
 | Script | Description |
 |---|---|
-| `scripts/SaProtABS_nanobody.py` | Nanobody stability scoring |
-| `scripts/ESM3ABS_nanobody.py` | ESM3 nanobody stability scoring |
-| `notebooks/SaProtABS.ipynb` | Interactive SaProt notebook |
-| `notebooks/ESM3ABS.ipynb` | Interactive ESM3 notebook |
+| `scripts/SaProtdG_nanobody.py` | Nanobody stability scoring |
+| `scripts/ESM3dG_nanobody.py` | ESM3 nanobody stability scoring |
+| `notebooks/SaProtdG.ipynb` | Interactive SaProt notebook |
+| `notebooks/ESM3dG.ipynb` | Interactive ESM3 notebook |
 
 ## Structure Folding
 
