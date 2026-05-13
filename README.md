@@ -1,5 +1,9 @@
 # ESM3ΔG & SaProtΔG — Protein Stability Prediction
 
+<p align="center">
+  <img src="logo.png" alt="ESM3dG logo" width="480"/>
+</p>
+
 Fine-tuned ESM3 and SaProt models for predicting per-residue protein stability (ΔG) and mutational effects (ΔΔG) directly from structure files (PDB/CIF).
 
 ## Models
@@ -168,38 +172,6 @@ ddg_scan, scaled_ddg_scan, sequence = ESM3ABS_predict(
 )
 # ddg_scan shape: (L, 20, 1, L) — all single-point mutations
 ```
-
-## API Reference
-
-### `ESM3ABS(weights_path)`
-Loads ESM3 with LoRA weights and a stability head.
-
-### `ESM3ABS_predict(model, pdb_path, chain_id="A", ddg_scanning=False, sigmoid_on=False)`
-
-| Return | Shape | Description |
-|---|---|---|
-| `pred_dg_per_res` | `(1, L)` | Per-residue ΔG |
-| `pred_dg_avg` | `[float]` | Mean ΔG across residues (kcal/mol) |
-| `sequence` | `str` | Parsed amino acid sequence |
-
-When `ddg_scanning=True`, returns `(ddg_scan, scaled_ddg_scan, sequence)` where `ddg_scan` has shape `(L, 20, 1, L)`.
-
----
-
-### `SaProtABS(weights_path)`
-Loads SaProt 650M with LoRA weights and a stability head.
-
-### `SaProtABS_predict(model, pdb_path, chain_id="A", ddg_scanning=False, cdna_rescale=False, foldseek_path="bin/foldseek", given_seq=None, handle_missing_residues="mask")`
-
-| Return | Shape | Description |
-|---|---|---|
-| `pred_dg_per_res` | `(1, L)` | Per-residue ΔG |
-| `pred_dg_avg` | `[float]` | Mean ΔG across residues (kcal/mol) |
-| `combined_seq` | `str` | SA-token sequence (alternating AA + structure letter) |
-
-Pass `given_seq="AaGgLl..."` to skip Foldseek and provide a precomputed SA-token sequence directly.
-
-`handle_missing_residues` options: `"mask"` (default, <5% gaps), `"interpolate"` (5–15%), `"skip"` (>15%), `"keep"` (raw).
 
 ## Example Scripts
 
