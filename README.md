@@ -194,10 +194,17 @@ Input structures can be predicted with:
   The `-o output.pdb` flag saves the structure to `output.pdb`. Without it, the PDB content is printed to the terminal only.
 - **ColabFold / LocalColabFold**: [YoshitakaMo/localcolabfold](https://github.com/YoshitakaMo/localcolabfold)
 
-  Install:
+  Install (recommended via pixi):
   ```bash
-  wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/install_colabfold_linux.sh
-  bash install_colabfold_linux.sh
+  git clone https://github.com/yoshitakamo/localcolabfold.git
+  cd localcolabfold
+  pixi install && pixi run setup
+  ```
+
+  Or via script:
+  ```bash
+  wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/install_colabbatch_linux.sh
+  bash install_colabbatch_linux.sh
   export PATH="/path/to/localcolabfold/colabfold-conda/bin:$PATH"
   ```
 
