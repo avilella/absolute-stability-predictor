@@ -72,8 +72,6 @@ pip install git+https://github.com/evolutionaryScale/esm.git
 > huggingface-cli login
 > ```
 
-**Foldseek** (required for SaProtΔG only) — download the binary for your platform from [steineggerlab/foldseek](https://github.com/steineggerlab/foldseek/releases) and place it at `bin/foldseek`.
-
 ## Download Weights
 
 Weights are hosted on Hugging Face: **[Yehlin/absolute-stability](https://huggingface.co/Yehlin/absolute-stability)**
