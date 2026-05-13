@@ -1,9 +1,37 @@
 import os
+import platform
+import stat
 import time
 import json
 import numpy as np
 import sys
 sys.path.append(".")
+
+FOLDSEEK_RELEASES = "https://github.com/steineggerlab/foldseek/releases/download/9-427df8a"
+FOLDSEEK_BINARIES = {
+    ("Linux", "x86_64"): f"{FOLDSEEK_RELEASES}/foldseek-linux-avx2.tar.gz",
+    ("Linux", "aarch64"): f"{FOLDSEEK_RELEASES}/foldseek-linux-arm64.tar.gz",
+    ("Darwin", "x86_64"): f"{FOLDSEEK_RELEASES}/foldseek-osx-universal.tar.gz",
+    ("Darwin", "arm64"):  f"{FOLDSEEK_RELEASES}/foldseek-osx-universal.tar.gz",
+}
+
+def _auto_download_foldseek(dest: str) -> None:
+    import tarfile, urllib.request, tempfile
+    system, machine = platform.system(), platform.machine()
+    url = FOLDSEEK_BINARIES.get((system, machine))
+    if url is None:
+        raise RuntimeError(f"No pre-built Foldseek binary for {system}/{machine}. Download manually from https://github.com/steineggerlab/foldseek/releases")
+    os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
+    print(f"Downloading Foldseek for {system}/{machine}...")
+    with tempfile.TemporaryDirectory() as tmp:
+        archive = os.path.join(tmp, "foldseek.tar.gz")
+        urllib.request.urlretrieve(url, archive)
+        with tarfile.open(archive) as tar:
+            tar.extractall(tmp)
+        src = os.path.join(tmp, "foldseek", "bin", "foldseek")
+        os.replace(src, dest)
+    os.chmod(dest, os.stat(dest).st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
+    print(f"Foldseek saved to {dest}")
 
 
 # Get structural seqs from pdb file
@@ -27,6 +55,8 @@ def get_struc_seq(foldseek,
         seq_dict: A dict of structural seqs. The keys are chain IDs. The values are tuples of
         (seq, struc_seq, combined_seq).
     """
+    if not os.path.exists(foldseek):
+        _auto_download_foldseek(foldseek)
     assert os.path.exists(foldseek), f"Foldseek not found: {foldseek}"
     assert os.path.exists(path), f"Pdb file not found: {path}"
     assert plddt_path is None or os.path.exists(plddt_path), f"Plddt file not found: {plddt_path}"

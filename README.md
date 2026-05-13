@@ -119,37 +119,19 @@ saprotdg_weights/
 ```python
 from ESM3ABS import ESM3ABS, ESM3ABS_predict
 
-# Load model
-model = ESM3ABS("esm3dg_weights/ESM3dG_weights_1_lora.ckpt")
+WEIGHTS = [
+    "esm3dg_weights/ESM3dG_weights_1_lora.ckpt",
+    "esm3dg_weights/ESM3dG_weights_2_lora.ckpt",
+    "esm3dg_weights/ESM3dG_weights_3_lora.ckpt",
+]
 
-# Predict ΔG for a structure
-pred_dg_per_res, pred_dg_avg, sequence = ESM3ABS_predict(
-    model,
-    pdb_path="examples/nanobody_1zvh.cif",
-    chain_id="A",
-)
-print(f"ΔG: {pred_dg_avg[0]:.2f} kcal/mol")
+models = [ESM3ABS(w) for w in WEIGHTS]
+preds = [ESM3ABS_predict(m, "examples/nanobody_1zvh.cif", "A")[1][0] for m in models]
+ensemble_avg = sum(preds) / len(preds)
+print(f"Ensemble ΔG: {ensemble_avg:.2f} kcal/mol")
 ```
 
 ### SaProtΔG
-
-```python
-from SaProtABS import SaProtABS, SaProtABS_predict
-
-# Load model
-model = SaProtABS("saprotdg_weights/SaProtdG_weights_1_lora.ckpt")
-
-# Predict ΔG for a structure
-pred_dg_per_res, pred_dg_avg, combined_seq = SaProtABS_predict(
-    model,
-    pdb_path="examples/nanobody_1zvh.cif",
-    chain_id="A",
-    foldseek_path="bin/foldseek",
-)
-print(f"ΔG: {pred_dg_avg[0]:.2f} kcal/mol")
-```
-
-### Ensemble Prediction (recommended)
 
 ```python
 from SaProtABS import SaProtABS, SaProtABS_predict
@@ -161,12 +143,10 @@ WEIGHTS = [
 ]
 
 models = [SaProtABS(w) for w in WEIGHTS]
-preds = [SaProtABS_predict(m, "examples/nanobody_1zvh.cif", "A")[1][0] for m in models]
+preds = [SaProtABS_predict(m, "examples/nanobody_1zvh.cif", "A", foldseek_path="bin/foldseek")[1][0] for m in models]
 ensemble_avg = sum(preds) / len(preds)
 print(f"Ensemble ΔG: {ensemble_avg:.2f} kcal/mol")
 ```
-
-The same pattern applies to ESM3ABS.
 
 ## Mutational Scanning (ΔΔG)
 
