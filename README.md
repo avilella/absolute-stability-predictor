@@ -189,8 +189,9 @@ Input structures can be predicted with:
 
 - **ESMFold** via the ESM Atlas API:
   ```bash
-  curl -X POST --data "SEQUENCE" https://api.esmatlas.com/foldSequence/v1/pdb/
+  curl -X POST --data "SEQUENCE" https://api.esmatlas.com/foldSequence/v1/pdb/ -o output.pdb
   ```
+  The `-o output.pdb` flag saves the structure to `output.pdb`. Without it, the PDB content is printed to the terminal only.
 - **ColabFold / LocalColabFold**: [YoshitakaMo/localcolabfold](https://github.com/YoshitakaMo/localcolabfold)
   ```bash
   colabfold_batch input outputdir/
