@@ -1,9 +1,12 @@
 import warnings
 warnings.filterwarnings("ignore")
 
-import os
+import os, sys
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, _ROOT)
 
 import torch
 import pandas as pd
@@ -20,7 +23,7 @@ ALPHABET = 'ACDEFGHIKLMNPQRSTVWY-'
 
 PDB_NAME = '1lci'
 CHAIN_ID = 'A'
-WEIGHTS_DIR = "/home/jupyter-yehlin/ESM3_SaProt_dG/esm3dg_weights"
+WEIGHTS_DIR = os.path.join(_ROOT, "esm3dg_weights")
 WEIGHT_FILES = [
     "ESM3dG_weights_1_lora.ckpt",
     "ESM3dG_weights_2_lora.ckpt",

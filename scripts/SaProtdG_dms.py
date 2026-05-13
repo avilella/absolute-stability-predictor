@@ -1,9 +1,12 @@
 import warnings
 warnings.filterwarnings("ignore")
 
-import os
+import os, sys
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, _ROOT)
 
 import torch
 import torch.nn as nn
@@ -62,7 +65,7 @@ cfg.testing.ddg_scanning = ddg_scanning
 
 PDB_NAME = '1lci'
 CHAIN_ID = 'A'
-WEIGHTS_DIR = "/home/jupyter-yehlin/ESM3_SaProt_dG/saprotdg_weights"
+WEIGHTS_DIR = os.path.join(_ROOT, "saprotdg_weights")
 WEIGHT_FILES = [
     "SaProtdG_weights_1_lora.ckpt",
     "SaProtdG_weights_2_lora.ckpt",
@@ -117,7 +120,7 @@ for i, weight_file in enumerate(WEIGHT_FILES, 1):
     plt.ylabel("Amino Acids")
     plt.title(f"Mutational Scanning {PDB_NAME} - Model {i}")
     plt.colorbar()
-    plt.savefig(f'/home/jupyter-yehlin/ESM3_SaProt_dG/mutational_scanning_{PDB_NAME}_model{i}_truncated.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'mutational_scanning_{PDB_NAME}_model{i}_truncated.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 # Average results across models
@@ -126,7 +129,7 @@ height, width = mean_results.shape
 
 # Save ensemble results
 df = pd.DataFrame(mean_results, index=list(ALPHABET[:-1]), columns=range(1, width + 1))
-df.to_csv(f'/home/jupyter-yehlin/ESM3_SaProt_dG/mutational_scanning_{PDB_NAME}_ensemble_truncated.csv')
+df.to_csv(f'mutational_scanning_{PDB_NAME}_ensemble_truncated.csv')
 
 # Plot ensemble results
 fig_width = min(max(width/4, 8), 25)
