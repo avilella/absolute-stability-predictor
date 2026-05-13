@@ -21,6 +21,7 @@ download_structures/
 CD/
 scripts/ESM3ABS_nanobody.py
 scripts/SaProtABS_nanobody.py
+scripts/run_paper_examples.py
 dmsv7_analysis/
 final_paper_check/
 csv/
