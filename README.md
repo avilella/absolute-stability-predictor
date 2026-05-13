@@ -128,7 +128,7 @@ pred_dg_per_res, pred_dg_avg, sequence = ESM3ABS_predict(
     pdb_path="examples/nanobody_1zvh.cif",
     chain_id="A",
 )
-print(f"Average ΔG: {pred_dg_avg[0]:.2f} kcal/mol")
+print(f"ΔG: {pred_dg_avg[0]:.2f} kcal/mol")
 ```
 
 ### SaProtΔG
@@ -146,7 +146,7 @@ pred_dg_per_res, pred_dg_avg, combined_seq = SaProtABS_predict(
     chain_id="A",
     foldseek_path="bin/foldseek",
 )
-print(f"Average ΔG: {pred_dg_avg[0]:.2f} kcal/mol")
+print(f"ΔG: {pred_dg_avg[0]:.2f} kcal/mol")
 ```
 
 ### Ensemble Prediction (recommended)
