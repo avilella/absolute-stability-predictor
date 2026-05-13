@@ -149,17 +149,17 @@ WEIGHTS = [
     "saprotdg_weights/SaProtdG_weights_augmented_3_lora.ckpt",
 ]
 
-models = [SaProtABS(w) for w in WEIGHTS]
-preds = [SaProtABS_predict(m, "examples/nanobody_1zvh.cif", "A")[1][0] for m in models]
-ensemble_avg = sum(preds) / len(preds)
-print(f"Ensemble ΔG: {ensemble_avg:.2f} kcal/mol")
-
 # Non-augmented ensemble
 # WEIGHTS = [
 #     "saprotdg_weights/SaProtdG_weights_1_lora.ckpt",
 #     "saprotdg_weights/SaProtdG_weights_2_lora.ckpt",
 #     "saprotdg_weights/SaProtdG_weights_3_lora.ckpt",
 # ]
+
+models = [SaProtABS(w) for w in WEIGHTS]
+preds = [SaProtABS_predict(m, "examples/nanobody_1zvh.cif", "A")[1][0] for m in models]
+ensemble_avg = sum(preds) / len(preds)
+print(f"Ensemble ΔG: {ensemble_avg:.2f} kcal/mol")
 ```
 
 ## Mutational Scanning (ΔΔG)
