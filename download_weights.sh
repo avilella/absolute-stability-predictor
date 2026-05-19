@@ -36,9 +36,13 @@ declare -A FILES=(
 echo "Downloading weights from ${REPO_ID} ..."
 mkdir -p "${SCRIPT_DIR}/esm3dg_weights" "${SCRIPT_DIR}/saprotdg_weights"
 
-# ── Try huggingface-cli first ─────────────────────────────────────────────────
-if command -v huggingface-cli &>/dev/null; then
-    echo "Using huggingface-cli"
+# ── Try hf / huggingface-cli ──────────────────────────────────────────────────
+HF_CMD=""
+command -v hf              &>/dev/null && HF_CMD="hf"
+command -v huggingface-cli &>/dev/null && [[ -z "$HF_CMD" ]] && HF_CMD="huggingface-cli"
+
+if [[ -n "$HF_CMD" ]]; then
+    echo "Using $HF_CMD"
     TOKEN_ARGS=()
     [[ -n "$TOKEN" ]] && TOKEN_ARGS=(--token "$TOKEN")
 
@@ -49,9 +53,8 @@ if command -v huggingface-cli &>/dev/null; then
             continue
         fi
         echo "  Downloading $repo_path ..."
-        huggingface-cli download "$REPO_ID" "$repo_path" \
+        "$HF_CMD" download "$REPO_ID" "$repo_path" \
             --local-dir "$SCRIPT_DIR" \
-            --local-dir-use-symlinks False \
             "${TOKEN_ARGS[@]}"
     done
 
@@ -91,7 +94,6 @@ for f in files:
         repo_id=repo_id,
         filename=f,
         local_dir=script_dir,
-        local_dir_use_symlinks=False,
         token=token,
     )
 
