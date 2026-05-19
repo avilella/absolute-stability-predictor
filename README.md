@@ -76,7 +76,14 @@ pip install git+https://github.com/evolutionaryScale/esm.git
 
 Weights are hosted on Hugging Face: **[Yehlin/absolute-stability](https://huggingface.co/Yehlin/absolute-stability)**
 
-### Option A — Python (recommended)
+### Option A — Shell script (recommended)
+
+```bash
+bash download_weights.sh                    # public repo or already logged in
+bash download_weights.sh --token hf_xxx     # supply token explicitly
+```
+
+### Option B — Python
 
 ```python
 from huggingface_hub import snapshot_download
@@ -88,7 +95,7 @@ snapshot_download(
 )
 ```
 
-### Option B — Manual
+### Option C — Manual
 
 Download individual files from [huggingface.co/Yehlin/absolute-stability](https://huggingface.co/Yehlin/absolute-stability) and place them as follows:
 

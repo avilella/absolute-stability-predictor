@@ -9,9 +9,6 @@ from esm.sdk.api import ESMProtein
 from huggingface_hub import login
 from model_utils import ESM3_Stability_head, SigmoidScaling
 
-# Patch ESM3's tokenize_sequence to handle None mask_token (transformers 4.40+ compat).
-# Newer PreTrainedTokenizerFast may return None for mask_token; str.replace() then crashes
-# even when the sequence contains no mask characters.
 import esm.utils.encoding as _esm_enc
 import esm.utils.constants.esm3 as _ESM_C
 _orig_tokenize_seq = _esm_enc.tokenize_sequence
@@ -299,9 +296,6 @@ def parse_CIF(path_to_cif, input_chain_list=None, ca_only=False, side_chains=Tru
 
             valid_residues = [res for res in chain if res.name in three_to_one]
             chain_length = len(valid_residues)
-            # print("Valid chain length:", chain_length)
-            
-            # print("chain_length", chain_length)
             chain_coords = np.zeros((chain_length, 37, 3), dtype=float)
             seq = []
 
@@ -390,10 +384,6 @@ def ESM3dG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_on
             
         else:
             pred_dg, pred_scaled_dg, mask = model(batch)
-
-            # Apply mask and calculate average
-            # Outputs are (B, L). Here B=1.
-
             pred_dg = pred_dg.cpu()
             pred_scaled_dg = pred_scaled_dg.cpu()
             mask = mask.cpu()
@@ -401,8 +391,6 @@ def ESM3dG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_on
             pred_dg = pred_dg * mask
             pred_scaled_dg = pred_scaled_dg * mask
             
-            
-            # Sum and divide by valid length
             # Note: mask excludes cls/eos usually, ensure safe division
             valid_len = mask.sum(dim=-1)
             pred_dg_avg = (pred_dg.sum(dim=-1) / valid_len).tolist()

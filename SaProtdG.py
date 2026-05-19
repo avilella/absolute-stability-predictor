@@ -225,19 +225,3 @@ def SaProtdG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, cdna_res
                 pred_dg = pred_dg * mask
                 pred_dg_avg = (pred_dg.sum(dim=-1) / mask.sum(dim=-1)).tolist()
                 return pred_dg, pred_dg_avg, combined_seq
-        
-# # Example usage
-# if __name__ == "__main__":
-#     # Load model (without LoRA for now)
-#     model = SaProtdG(
-#         "/home/jupyter-yehlin/ESM3_SaProt_dG/SaProtdG_weights_1_additional_layers.ckpt"
-#     )
-    
-#     # Test with a simple sequence
-#     test_sequence = ["MKTVRQERLKSIVRILERSKEPVSGAQLAEELSVSRQVIVQDIAYLRSLGYNIVATPRGYVLAGG"]
-    
-#     model.eval()
-#     with torch.no_grad():
-#         dg, scaled_dg, mask = model(test_sequence)
-#         dg_avg = (dg * mask).sum(dim=-1) / mask.sum(dim=-1)
-#         print(f"Predicted dG: {dg_avg.item():.3f}") 
