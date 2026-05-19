@@ -37,7 +37,6 @@ summary
 # Large / generated files
 myfile.zip
 Paper.pdf
-index.html
 paper_example_results.json
 
 # Symlinks to local environment
