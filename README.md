@@ -149,8 +149,6 @@ ddg_scan, scaled_ddg_scan, sequence = ESM3dG_predict(
 
 | Script | Description |
 |---|---|
-| `scripts/SaProtdG_nanobody.py` | Nanobody stability scoring |
-| `scripts/ESM3dG_nanobody.py` | ESM3 nanobody stability scoring |
 | `notebooks/SaProtdG.ipynb` | Interactive SaProt notebook |
 | `notebooks/ESM3dG.ipynb` | Interactive ESM3 notebook |
 
