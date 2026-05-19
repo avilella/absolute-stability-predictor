@@ -183,6 +183,6 @@ If you use this code or models, please cite:
   title   = {},
   author  = {},
   journal = {},
-  year    = {2025},
+  year    = {2026},
 }
 ```
