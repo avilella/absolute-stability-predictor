@@ -97,25 +97,7 @@ snapshot_download(
 
 ### Option C — Manual
 
-Download individual files from [huggingface.co/Yehlin/absolute-stability](https://huggingface.co/Yehlin/absolute-stability) and place them as follows:
-
-```
-esm3dg_weights/
-  ESM3dG_weights_1_lora.ckpt
-  ESM3dG_weights_2_lora.ckpt
-  ESM3dG_weights_3_lora.ckpt
-  ESM3dG_weights_augmented_1_lora.ckpt   # augmented ensemble
-  ESM3dG_weights_augmented_2_lora.ckpt
-  ESM3dG_weights_augmented_3_lora.ckpt
-
-saprotdg_weights/
-  SaProtdG_weights_1_lora.ckpt
-  SaProtdG_weights_2_lora.ckpt
-  SaProtdG_weights_3_lora.ckpt
-  SaProtdG_weights_augmented_1_lora.ckpt
-  SaProtdG_weights_augmented_2_lora.ckpt
-  SaProtdG_weights_augmented_3_lora.ckpt
-```
+Download files directly from [huggingface.co/Yehlin/absolute-stability](https://huggingface.co/Yehlin/absolute-stability) and place them into `esm3dg_weights/` and `saprotdg_weights/`.
 
 ## Quick Start
 
