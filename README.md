@@ -179,10 +179,16 @@ Input structures can be predicted with:
 If you use this code or models, please cite:
 
 ```bibtex
-@article{,
-  title   = {},
-  author  = {},
-  journal = {},
-  year    = {2026},
+@article{cho2026accurate,
+  title={Accurate protein stability prediction for small domains using mega-scale experiments},
+  author={Cho, Yehlin and Tsuboyama, Kotaro and Litberg, Theodore J and Jung, Michelle D and Obisesan, Adunoluwa and Wang, Qian and Phoumyvong, Claire M and Thibeault, Jane and Ovchinnikov, Sergey and Rocklin, Gabriel Jacob},
+  journal={bioRxiv},
+  pages={2026--05},
+  year={2026},
+  publisher={Cold Spring Harbor Laboratory}
 }
 ```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
