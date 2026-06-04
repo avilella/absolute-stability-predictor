@@ -7,6 +7,12 @@ import numpy as np
 import sys
 sys.path.append(".")
 
+from pathlib import Path
+
+# Automatically finds the current user's home directory
+home = Path.home()
+
+
 FOLDSEEK_RELEASES = "https://github.com/steineggerlab/foldseek/releases/download/9-427df8a"
 FOLDSEEK_BINARIES = {
     ("Linux", "x86_64"): f"{FOLDSEEK_RELEASES}/foldseek-linux-avx2.tar.gz",
@@ -55,14 +61,15 @@ def get_struc_seq(foldseek,
         seq_dict: A dict of structural seqs. The keys are chain IDs. The values are tuples of
         (seq, struc_seq, combined_seq).
     """
-    if not os.path.exists(foldseek):
+    foldseek_path = home / "foldseek/bin/foldseek"
+    if not os.path.exists(foldseek_path):
         _auto_download_foldseek(foldseek)
-    assert os.path.exists(foldseek), f"Foldseek not found: {foldseek}"
+    assert os.path.exists(foldseek_path), f"Foldseek not found: {foldseek}"
     assert os.path.exists(path), f"Pdb file not found: {path}"
     assert plddt_path is None or os.path.exists(plddt_path), f"Plddt file not found: {plddt_path}"
     
     tmp_save_path = f"get_struc_seq_{process_id}.tsv"
-    cmd = f"{foldseek} structureto3didescriptor -v 0 --threads 1 --chain-name-mode 1 {path} {tmp_save_path}"
+    cmd = f"{foldseek_path} structureto3didescriptor -v 0 --threads 1 --chain-name-mode 1 {path} {tmp_save_path}"
     os.system(cmd)
 
     seq_dict = {}
@@ -96,9 +103,9 @@ def get_struc_seq(foldseek,
 
 
 if __name__ == '__main__':
-    foldseek = "/sujin/bin/foldseek"
-    # test_path = "/sujin/Datasets/PDB/all/6xtd.cif"
-    test_path = "/sujin/Datasets/FLIP/meltome/af2_structures/A0A061ACX4.pdb"
-    plddt_path = "/sujin/Datasets/FLIP/meltome/af2_plddts/A0A061ACX4.json"
-    res = get_struc_seq(foldseek, test_path, plddt_path=plddt_path, plddt_threshold=70.)
-    print(res["A"][1].lower())
+    foldseek = foldseek_path
+#    # test_path = "/sujin/Datasets/PDB/all/6xtd.cif"
+#    test_path = "/sujin/Datasets/FLIP/meltome/af2_structures/A0A061ACX4.pdb"
+#    plddt_path = "/sujin/Datasets/FLIP/meltome/af2_plddts/A0A061ACX4.json"
+#    res = get_struc_seq(foldseek, test_path, plddt_path=plddt_path, plddt_threshold=70.)
+#    print(res["A"][1].lower())
