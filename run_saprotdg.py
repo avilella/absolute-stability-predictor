@@ -42,6 +42,7 @@ def main():
     parser.add_argument("-c", "--chains", default="A", help="Chain ID(s) to process, separated by ':' (e.g., A or H:L). Default: A")
     parser.add_argument("--tag", default="sapr", help="Tag to append to the output file (default: sapr)")
     parser.add_argument("--outdir", default=None, help="Output directory (default: same as input file directory)")
+    parser.add_argument("--refresh", action="store_true", help="Recalculate even if a non-empty output file exists")
     parser.add_argument("-v", "--verbose", action="store_true", help="Print detailed processing steps to STDERR")
     
     args = parser.parse_args()
@@ -61,6 +62,13 @@ def main():
 
     out_filename = f"{base_name}.{args.tag}.csv"
     out_filepath = os.path.join(out_dir, out_filename)
+
+    # Check if we should skip calculation
+    if not args.refresh:
+        if os.path.exists(out_filepath) and os.path.getsize(out_filepath) > 0:
+            log_message(f"Found existing non-empty output file. Skipping calculation.", verbose_only=True, is_verbose=args.verbose)
+            print(out_filepath)
+            sys.exit(0)
 
     log_message(f"Starting stability calculation for: {base_name_full}", verbose_only=False, is_verbose=args.verbose)
 
@@ -102,7 +110,6 @@ def main():
     try:
         with open(out_filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
-            # Added "Name" column to the header
             writer.writerow(['filename', 'basename', 'name', 'chain', 'saprotdg_stability_kcal_mol'])
             for chain, ensemble_avg in results:
                 writer.writerow([input_path, base_name, antibody_name, chain, f"{ensemble_avg:.2f}"])
