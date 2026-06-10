@@ -145,6 +145,37 @@ ddg_scan, scaled_ddg_scan, sequence = ESM3dG_predict(
 # ddg_scan shape: (L, 20, 1, L) — all single-point mutations
 ```
 
+## Complex Stability (Binder + Target) *(new)*
+
+For a PDB/CIF containing both a binder and a target chain, `ESM3dG_predict_complex` returns the predicted ΔG of the full complex (ΔG_AB) as well as the individual chain values.
+
+**In the paper, we rank binders by ΔG_AB — the predicted stability of the complex structure.**
+
+`ESM3dG_predict_complex` returns `(dg_binder, dg_target, dg_AB)`. The paper metric is `dg_AB`.
+
+Two example TrkA RFdiffusion binder structures (AF2-predicted complexes, chain A = binder, chain B = TrkA target) are provided in `examples/`:
+
+| File | Experimentally tested |
+|---|---|
+| `examples/Trka_binder_AF2_10.pdb` | **Binder** |
+| `examples/Trka_binder_AF2_11.pdb` | Non-binder |
+
+```python
+from ESM3dG import ESM3dG, ESM3dG_predict_complex
+
+models = [ESM3dG(w) for w in WEIGHTS]
+
+for pdb_path in ["examples/Trka_binder_AF2_10.pdb", "examples/Trka_binder_AF2_11.pdb"]:
+    dg_AB_preds = []
+    for model in models:
+        _, _, dg_AB = ESM3dG_predict_complex(
+            model, pdb_path, binder_chain='A', target_chain='B'
+        )
+        dg_AB_preds.append(dg_AB)
+    ensemble_dg_AB = sum(dg_AB_preds) / len(dg_AB_preds)
+    print(f"{pdb_path}  ΔG_AB: {ensemble_dg_AB:.2f} kcal/mol")
+```
+
 ## Example Scripts
 
 | Script | Description |

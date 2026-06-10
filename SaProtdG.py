@@ -1,8 +1,11 @@
+import os
 import torch
 import torch.nn as nn
+import gemmi
 from transformers import AutoTokenizer, AutoModelForMaskedLM
 from peft import get_peft_model, LoraConfig, TaskType
 from model_utils import Stability_classification_head, SigmoidScaling
+from utils.foldseek_util import get_struc_seq
 
 def SaProtdG(additional_layers_path, cfg=None):
     """
@@ -180,9 +183,7 @@ def SaProtdG(additional_layers_path, cfg=None):
     return final_model
 
 def SaProtdG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, cdna_rescale=False, foldseek_path="bin/foldseek", given_seq=None, scan_batch_size=1):
-    from utils.foldseek_util import get_struc_seq
-    import os
-    
+
     def get_saprot_input_info(pdb_file, chain_id='A'):
         process_id = os.getpid()
         struct_seq_data = get_struc_seq(foldseek_path, pdb_file, [chain_id], process_id)
@@ -225,3 +226,41 @@ def SaProtdG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, cdna_res
                 pred_dg = pred_dg * mask
                 pred_dg_avg = (pred_dg.sum(dim=-1) / mask.sum(dim=-1)).tolist()
                 return pred_dg, pred_dg_avg, combined_seq
+
+def _write_single_chain(pdb_path, chain_id, out_path):
+    st = gemmi.read_structure(pdb_path)
+    m = st[0]
+    for i in range(len(m) - 1, -1, -1):
+        if m[i].name != chain_id:
+            del m[i]
+    st.write_pdb(out_path)
+
+
+def SaProtdG_predict_complex(model, pdb_path, binder_chain='A', target_chain='B', foldseek_path="bin/foldseek"):
+    pid = os.getpid()
+    tmp_A, tmp_B = f"/tmp/saprot_{pid}_A.pdb", f"/tmp/saprot_{pid}_B.pdb"
+
+    try:
+        _write_single_chain(pdb_path, binder_chain, tmp_A)
+        _write_single_chain(pdb_path, target_chain, tmp_B)
+        data_A  = get_struc_seq(foldseek_path, tmp_A,    [binder_chain],               pid)
+        data_B  = get_struc_seq(foldseek_path, tmp_B,    [target_chain],               pid)
+        data_AB = get_struc_seq(foldseek_path, pdb_path, [binder_chain, target_chain], pid)
+    finally:
+        for f in (tmp_A, tmp_B):
+            if os.path.exists(f): os.remove(f)
+
+    if binder_chain not in data_A or target_chain not in data_B or \
+       binder_chain not in data_AB or target_chain not in data_AB:
+        print(f"Could not find chains {binder_chain} and/or {target_chain}")
+        return None, None, None
+
+    seq_A  = data_A[binder_chain][2]
+    seq_B  = data_B[target_chain][2]
+    seq_AB = data_AB[binder_chain][2] + data_AB[target_chain][2]
+
+    _, dg_A,  _ = SaProtdG_predict(model, pdb_path, given_seq=seq_A)
+    _, dg_B,  _ = SaProtdG_predict(model, pdb_path, given_seq=seq_B)
+    _, dg_AB, _ = SaProtdG_predict(model, pdb_path, given_seq=seq_AB)
+
+    return dg_A[0], dg_B[0], dg_AB[0]
