@@ -32,6 +32,7 @@ structures/
 
 # Loose PDB files at root
 *.pdb
+!examples/*.pdb
 summary
 
 # Large / generated files

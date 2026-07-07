@@ -271,45 +271,43 @@ def ESM3dG(additional_layers_path, cfg=None):
 
 
 def parse_CIF(path_to_cif, input_chain_list=None, ca_only=False, side_chains=True):
-    c = 0
-    cif_dict_list = []
     init_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
                      'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
                      'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
     extra_alphabet = [str(item) for item in list(np.arange(300))]
-    chain_alphabet = init_alphabet + extra_alphabet
 
-    if input_chain_list:
-        chain_alphabet = input_chain_list
+    if input_chain_list is None:
+        chain_order = init_alphabet + extra_alphabet
+    elif isinstance(input_chain_list, str):
+        chain_order = [input_chain_list]
+    else:
+        chain_order = list(input_chain_list)
 
-    biounit_names = [path_to_cif]
-    for biounit in biounit_names:
-        my_dict = {}
-        s = 0
-        concat_seq = ''
-        coords_dict = {}
-        model = gemmi.read_structure(biounit)
-        for chain in model[0]:
-            letter = chain.name
-            if letter not in chain_alphabet:
+    model = gemmi.read_structure(path_to_cif)[0]
+    chain_map = {chain.name: chain for chain in model}
+
+    seq = []
+    all_coords = []
+
+    for target_chain in chain_order:
+        if target_chain not in chain_map:
+            continue
+        for res in chain_map[target_chain]:
+            if res.name not in three_to_one:
                 continue
+            seq.append(three_to_one[res.name])
+            atom_coords = np.zeros((37, 3), dtype=float)
+            for atom in res:
+                if atom.name in atom_order:
+                    atom_idx = atom_order[atom.name]
+                    if atom_idx < 37:
+                        atom_coords[atom_idx, :] = atom.pos.tolist()
+            all_coords.append(atom_coords)
 
-            valid_residues = [res for res in chain if res.name in three_to_one]
-            chain_length = len(valid_residues)
-            chain_coords = np.zeros((chain_length, 37, 3), dtype=float)
-            seq = []
+    if not all_coords:
+        return None, None
 
-            for i, res in enumerate(valid_residues):
-                # Append the one-letter sequence for valid amino acids
-                seq.append(three_to_one[res.name])
-                
-                for atom in res:
-                    if atom.name in atom_order:
-                        atom_idx = atom_order[atom.name]
-                        if atom_idx < 37:
-                            chain_coords[i, atom_idx, :] = atom.pos.tolist()
-
-    return "".join(seq), chain_coords
+    return "".join(seq), np.array(all_coords)
 
 
 
@@ -400,4 +398,15 @@ def ESM3dG_predict(model, pdb_path, chain_id='A', ddg_scanning=False, sigmoid_on
                 return pred_scaled_dg, pred_scaled_dg_avg, sequence
             else:
                 return pred_dg, pred_dg_avg, sequence
+
+def ESM3dG_predict_complex(model, pdb_path, binder_chain='A', target_chain='B', sigmoid_on=False):
+    """
+    Returns (dg_binder, dg_target, dg_complex).
+    In the paper, binders are ranked by dg_complex (dg_AB).
+    """
+    _, dg_A, _  = ESM3dG_predict(model, pdb_path, chain_id=binder_chain, sigmoid_on=sigmoid_on)
+    _, dg_B, _  = ESM3dG_predict(model, pdb_path, chain_id=target_chain, sigmoid_on=sigmoid_on)
+    _, dg_AB, _ = ESM3dG_predict(model, pdb_path, chain_id=[binder_chain, target_chain], sigmoid_on=sigmoid_on)
+
+    return dg_A[0], dg_B[0], dg_AB[0]
 
