@@ -79,9 +79,9 @@ def main():
 
     # SaProtdG Weights configuration
     WEIGHTS = [
-        "saprotdg_weights/SaProtdG_weights_augmented_1_lora.ckpt",
-        "saprotdg_weights/SaProtdG_weights_augmented_2_lora.ckpt",
-        "saprotdg_weights/SaProtdG_weights_augmented_3_lora.ckpt",
+        os.path.expanduser("~/absolute-stability-predictor/saprotdg_weights/SaProtdG_weights_augmented_1_lora.ckpt"),
+        os.path.expanduser("~/absolute-stability-predictor/saprotdg_weights/SaProtdG_weights_augmented_2_lora.ckpt"),
+        os.path.expanduser("~/absolute-stability-predictor/saprotdg_weights/SaProtdG_weights_augmented_3_lora.ckpt"),
     ]
 
     # Load Models
